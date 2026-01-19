@@ -1,0 +1,44 @@
+{
+ "name": "Items Created by Group",
+ "chart_name": "Items Created by Group",
+ "chart_type": "Group By",
+ "doctype": "Dashboard Chart",
+ "document_type": "Item Code Request Item",
+ "filters_json": "[[\"Item Code Request Item\",\"item_created\",\"=\",1]]",
+ "group_by_type": "Count",
+ "group_by_based_on": "item_group",
+ "is_public": 1,
+ "is_standard": 1,
+ "module": "Item Generator",
+ "number_of_groups": 0,
+ "owner": "Administrator",
+ "time_interval": "Monthly",
+ "timespan": "Last Year",
+ "type": "Donut",
+ "use_report_chart": 0,
+ "y_axis": []
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,123 @@
+[
+ {
+  "doctype": "Workflow",
+  "name": "Item Code Request Workflow",
+  "workflow_name": "Item Code Request Workflow",
+  "document_type": "Item Code Request",
+  "is_active": 1,
+  "send_email_alert": 0,
+  "workflow_state_field": "workflow_state",
+  "states": [
+   {
+    "doctype": "Workflow Document State",
+    "state": "Draft",
+    "doc_status": "0",
+    "allow_edit": "Store User",
+    "update_field": "workflow_state",
+    "update_value": "Draft"
+   },
+   {
+    "doctype": "Workflow Document State",
+    "state": "Pending Codification",
+    "doc_status": "1",
+    "allow_edit": "Codification User",
+    "update_field": "workflow_state",
+    "update_value": "Pending Codification"
+   },
+   {
+    "doctype": "Workflow Document State",
+    "state": "Pending HSN Verification",
+    "doc_status": "1",
+    "allow_edit": "HO Purchase User",
+    "update_field": "workflow_state",
+    "update_value": "Pending HSN Verification"
+   },
+   {
+    "doctype": "Workflow Document State",
+    "state": "Pending Account Verification",
+    "doc_status": "1",
+    "allow_edit": "HO Account User",
+    "update_field": "workflow_state",
+    "update_value": "Pending Account Verification"
+   },
+   {
+    "doctype": "Workflow Document State",
+    "state": "Approved",
+    "doc_status": "1",
+    "allow_edit": "Item Manager",
+    "is_optional_state": 0,
+    "update_field": "workflow_state",
+    "update_value": "Approved"
+   },
+   {
+    "doctype": "Workflow Document State",
+    "state": "Rejected",
+    "doc_status": "2",
+    "allow_edit": "Item Manager",
+    "is_optional_state": 0,
+    "update_field": "workflow_state",
+    "update_value": "Rejected"
+   }
+  ],
+  "transitions": [
+   {
+    "doctype": "Workflow Transition",
+    "state": "Draft",
+    "action": "Submit",
+    "next_state": "Pending Codification",
+    "allowed": "Store User",
+    "allow_self_approval": 1
+   },
+   {
+    "doctype": "Workflow Transition",
+    "state": "Pending Codification",
+    "action": "Add Code",
+    "next_state": "Pending HSN Verification",
+    "allowed": "Codification User",
+    "allow_self_approval": 1,
+    "condition": "doc.items_with_code > 0"
+   },
+   {
+    "doctype": "Workflow Transition",
+    "state": "Pending Codification",
+    "action": "Reject",
+    "next_state": "Rejected",
+    "allowed": "Codification User",
+    "allow_self_approval": 1
+   },
+   {
+    "doctype": "Workflow Transition",
+    "state": "Pending HSN Verification",
+    "action": "Verify HSN",
+    "next_state": "Pending Account Verification",
+    "allowed": "HO Purchase User",
+    "allow_self_approval": 1
+   },
+   {
+    "doctype": "Workflow Transition",
+    "state": "Pending HSN Verification",
+    "action": "Reject",
+    "next_state": "Rejected",
+    "allowed": "HO Purchase User",
+    "allow_self_approval": 1
+   },
+   {
+    "doctype": "Workflow Transition",
+    "state": "Pending Account Verification",
+    "action": "Approve & Create Items",
+    "next_state": "Approved",
+    "allowed": "HO Account User",
+    "allow_self_approval": 1
+   },
+   {
+    "doctype": "Workflow Transition",
+    "state": "Pending Account Verification",
+    "action": "Reject",
+    "next_state": "Rejected",
+    "allowed": "HO Account User",
+    "allow_self_approval": 1
+   }
+  ]
+ }
+]
+

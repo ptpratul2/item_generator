@@ -1,0 +1,223 @@
+{
+    "actions": [],
+    "allow_rename": 1,
+    "autoname": "ITMREQ-.#####",
+    "creation": "2024-10-30 12:00:00",
+    "doctype": "DocType",
+    "editable_grid": 1,
+    "engine": "InnoDB",
+    "field_order": [
+        "request_title",
+        "requested_by",
+        "cost_center",
+        "company",
+        "column_break_1",
+        "request_date",
+        "department",
+        "mobile",
+        "section_break_items",
+        "items",
+        "section_break_summary",
+        "total_items",
+        "column_break_summary",
+        "items_with_code",
+        "items_created",
+        "section_break_workflow",
+        "workflow_state",
+        "amended_from"
+    ],
+    "fields": [
+        {
+            "fieldname": "request_title",
+            "fieldtype": "Data",
+            "in_list_view": 1,
+            "label": "Request Title"
+        },
+        {
+            "default": "__user",
+            "fieldname": "requested_by",
+            "fieldtype": "Link",
+            "label": "Requested By",
+            "options": "User"
+        },
+        {
+            "default": "now",
+            "fieldname": "request_date",
+            "fieldtype": "Datetime",
+            "label": "Request Date & Time"
+        },
+        {
+            "fieldname": "department",
+            "fieldtype": "Link",
+            "label": "Department",
+            "options": "Department"
+        },
+        {
+            "fieldname": "items",
+            "fieldtype": "Table",
+            "label": "Items",
+            "options": "Item Code Request Item",
+            "reqd": 1
+        },
+        {
+            "default": "0",
+            "fieldname": "total_items",
+            "fieldtype": "Int",
+            "label": "Total Items",
+            "read_only": 1,
+            "allow_on_submit": 1
+        },
+        {
+            "default": "0",
+            "fieldname": "items_with_code",
+            "fieldtype": "Int",
+            "label": "Items with Generated Code",
+            "read_only": 1,
+            "allow_on_submit": 1
+        },
+        {
+            "default": "0",
+            "fieldname": "items_created",
+            "fieldtype": "Int",
+            "label": "Items Created in ERPNext",
+            "read_only": 1,
+            "allow_on_submit": 1
+        },
+        {
+            "allow_on_submit": 1,
+            "fieldname": "workflow_state",
+            "fieldtype": "Link",
+            "label": "Workflow State",
+            "options": "Workflow State",
+            "read_only": 1
+        },
+        {
+            "fieldname": "column_break_1",
+            "fieldtype": "Column Break"
+        },
+        {
+            "fieldname": "section_break_items",
+            "fieldtype": "Section Break",
+            "label": "Items to be Created"
+        },
+        {
+            "collapsible": 1,
+            "fieldname": "section_break_summary",
+            "fieldtype": "Section Break",
+            "label": "Summary"
+        },
+        {
+            "fieldname": "column_break_summary",
+            "fieldtype": "Column Break"
+        },
+        {
+            "fieldname": "section_break_workflow",
+            "fieldtype": "Section Break",
+            "label": "Workflow & Approval"
+        },
+        {
+            "fieldname": "amended_from",
+            "fieldtype": "Link",
+            "label": "Amended From",
+            "no_copy": 1,
+            "options": "Item Code Request",
+            "print_hide": 1,
+            "read_only": 1,
+            "search_index": 1
+        },
+        {
+            "fieldname": "cost_center",
+            "fieldtype": "Link",
+            "label": "Cost Center",
+            "options": "Cost Center",
+            "reqd": 1
+        },
+        {
+            "fieldname": "company",
+            "fieldtype": "Link",
+            "label": "Company",
+            "options": "Company",
+            "reqd": 1
+        },
+        {
+            "fieldname": "mobile",
+            "fieldtype": "Data",
+            "label": "Mobile",
+            "options": "Phone"
+        }
+    ],
+    "index_web_pages_for_search": 1,
+    "is_submittable": 1,
+    "links": [],
+    "modified": "2025-11-04 16:00:00.000000",
+    "modified_by": "Administrator",
+    "module": "Item Generator",
+    "name": "Item Code Request",
+    "naming_rule": "Expression (old style)",
+    "owner": "Administrator",
+    "permissions": [
+        {
+            "create": 1,
+            "delete": 1,
+            "email": 1,
+            "export": 1,
+            "print": 1,
+            "read": 1,
+            "report": 1,
+            "role": "Store User",
+            "share": 1,
+            "write": 1
+        },
+        {
+            "email": 1,
+            "export": 1,
+            "print": 1,
+            "read": 1,
+            "report": 1,
+            "role": "Codification User",
+            "share": 1,
+            "submit": 1,
+            "write": 1
+        },
+        {
+            "email": 1,
+            "export": 1,
+            "print": 1,
+            "read": 1,
+            "report": 1,
+            "role": "HO Purchase User",
+            "share": 1,
+            "submit": 1,
+            "write": 1
+        },
+        {
+            "email": 1,
+            "export": 1,
+            "print": 1,
+            "read": 1,
+            "report": 1,
+            "role": "HO Account User",
+            "share": 1,
+            "submit": 1,
+            "write": 1
+        },
+        {
+            "amend": 1,
+            "cancel": 1,
+            "email": 1,
+            "export": 1,
+            "print": 1,
+            "read": 1,
+            "report": 1,
+            "role": "Item Manager",
+            "share": 1,
+            "submit": 1,
+            "write": 1
+        }
+    ],
+    "row_format": "Dynamic",
+    "sort_field": "modified",
+    "sort_order": "DESC",
+    "states": [],
+    "track_changes": 1
+}

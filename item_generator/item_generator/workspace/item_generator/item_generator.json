@@ -1,0 +1,64 @@
+{
+ "charts": [
+  {
+   "chart_name": "Items Created Timeline",
+   "label": "Items Created Timeline"
+  }
+ ],
+ "content": "[{\"id\":\"TUdgXcqbWY\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Item Generator</span>\",\"col\":12}},{\"id\":\"clXTj7ZZ_L\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Items Created Timeline\",\"col\":12}},{\"id\":\"OCzMD9QYsC\",\"type\":\"card\",\"data\":{\"card_name\":\"Item\",\"col\":4}}]",
+ "creation": "2024-01-01 10:00:00",
+ "custom_blocks": [],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "for_user": "",
+ "hide_custom": 0,
+ "icon": "edit-round",
+ "idx": 0,
+ "indicator_color": "",
+ "is_hidden": 0,
+ "label": "Item Generator",
+ "links": [
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Item Code Request",
+   "link_count": 0,
+   "link_to": "Item Code Request",
+   "link_type": "DocType",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Item",
+   "link_count": 1,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Item Code Request",
+   "link_count": 0,
+   "link_to": "Item Code Request",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  }
+ ],
+ "modified": "2026-01-19 12:18:45.234928",
+ "modified_by": "Administrator",
+ "module": "Item Generator",
+ "name": "Item Generator",
+ "number_cards": [],
+ "owner": "Administrator",
+ "parent_page": "",
+ "public": 1,
+ "quick_lists": [],
+ "roles": [],
+ "sequence_id": 1.0,
+ "shortcuts": [],
+ "title": "Item Generator"
+}

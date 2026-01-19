@@ -1,0 +1,51 @@
+[
+    {
+        "doctype": "Workflow State",
+        "name": "Draft",
+        "workflow_state_name": "Draft",
+        "style": "Info",
+        "icon": "edit"
+    },
+    {
+        "doctype": "Workflow State",
+        "name": "Pending Codification",
+        "workflow_state_name": "Pending Codification",
+        "style": "Warning",
+        "icon": "pending-actions"
+    },
+    {
+        "doctype": "Workflow State",
+        "name": "Pending HSN Verification",
+        "workflow_state_name": "Pending HSN Verification",
+        "style": "Warning",
+        "icon": "verified-user"
+    },
+    {
+        "doctype": "Workflow State",
+        "name": "Pending Account Verification",
+        "workflow_state_name": "Pending Account Verification",
+        "style": "Warning",
+        "icon": "account-balance"
+    },
+    {
+        "doctype": "Workflow State",
+        "name": "Pending Approval",
+        "workflow_state_name": "Pending Approval",
+        "style": "Primary",
+        "icon": "assignment"
+    },
+    {
+        "doctype": "Workflow State",
+        "name": "Approved",
+        "workflow_state_name": "Approved",
+        "style": "Success",
+        "icon": "check-circle"
+    },
+    {
+        "doctype": "Workflow State",
+        "name": "Rejected",
+        "workflow_state_name": "Rejected",
+        "style": "Danger",
+        "icon": "cancel"
+    }
+]

@@ -1,0 +1,29 @@
+{
+ "cards": [],
+ "charts": [
+  {
+   "chart": "Item Requests by Status",
+   "width": "Half"
+  },
+  {
+   "chart": "Items Created by Group",
+   "width": "Half"
+  },
+  {
+   "chart": "Items Created Timeline",
+   "width": "Full"
+  }
+ ],
+ "creation": "2026-01-19 11:52:07.180973",
+ "dashboard_name": "Item Code Request",
+ "docstatus": 0,
+ "doctype": "Dashboard",
+ "idx": 0,
+ "is_default": 0,
+ "is_standard": 1,
+ "modified": "2026-01-19 12:14:35.231487",
+ "modified_by": "Administrator",
+ "module": "Item Generator",
+ "name": "Item Code Request",
+ "owner": "Administrator"
+}
