@@ -144,6 +144,12 @@ app_license = "mit"
 # 		"on_trash": "method"
 # 	}
 # }
+doc_events = {
+	"Item Code Request": {
+		"on_submit": "item_generator.item_generator.doctype.item_code_request.item_code_request.on_submit_hook",
+		"on_update_after_submit": "item_generator.item_generator.doctype.item_code_request.item_code_request.on_update_after_submit_hook",
+	}
+}
 
 # Scheduled Tasks
 # ---------------
