@@ -196,3 +196,6 @@ frappe.ready(function () {
 		hideSuggestions();
 	});
 });
+
+
+
