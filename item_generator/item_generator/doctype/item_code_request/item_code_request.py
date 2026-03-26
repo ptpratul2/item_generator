@@ -189,7 +189,10 @@ class ItemCodeRequest(Document):
 			item_row.db_update()
 			return
 		
-		# Create new Item
+		# Create new Item (ERPNext: fixed assets must be non-stock — validate_fixed_asset)
+		is_fixed_asset = cint(item_row.is_asset_item)
+		is_stock_item = 0 if is_fixed_asset else cint(item_row.is_stock_item)
+
 		item = frappe.get_doc({
 			"doctype": "Item",
 			"item_code": item_row.generated_code,
@@ -198,9 +201,9 @@ class ItemCodeRequest(Document):
 			"description": item_row.description or item_row.item_name,
 			"stock_uom": item_row.uom,
 			"gst_hsn_code": item_row.hsn_code,
-			"is_stock_item": item_row.is_stock_item,
-			"is_fixed_asset": item_row.is_asset_item,
-			"asset_category": item_row.asset_category if item_row.is_asset_item else None,
+			"is_stock_item": is_stock_item,
+			"is_fixed_asset": is_fixed_asset,
+			"asset_category": item_row.asset_category if is_fixed_asset else None,
 			"disabled": 0
 		})
 		

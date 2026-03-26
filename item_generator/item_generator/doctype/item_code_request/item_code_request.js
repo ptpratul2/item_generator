@@ -119,6 +119,10 @@ frappe.ui.form.on('Item Code Request Item', {
 
 	is_asset_item: function (frm, cdt, cdn) {
 		let row = locals[cdt][cdn];
+		if (row.is_asset_item) {
+			// ERPNext: fixed asset items must be non-stock
+			frappe.model.set_value(cdt, cdn, 'is_stock_item', 0);
+		}
 		if (!row.is_asset_item) {
 			frappe.model.set_value(cdt, cdn, 'asset_category', '');
 		}
