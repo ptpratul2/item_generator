@@ -85,6 +85,7 @@
             "fieldtype": "Link",
             "in_list_view": 1,
             "label": "Asset Category",
+            "mandatory_depends_on": "eval:doc.is_asset_item==1",
             "options": "Asset Category"
         },
         {

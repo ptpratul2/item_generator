@@ -122,6 +122,7 @@ frappe.ui.form.on('Item Code Request Item', {
 		if (!row.is_asset_item) {
 			frappe.model.set_value(cdt, cdn, 'asset_category', '');
 		}
+		frm.refresh_field('items');
 	},
 
 	item_name: function (frm, cdt, cdn) {
