@@ -49,6 +49,7 @@
             "label": "Item Group",
             "options": "Item Group",
             "reqd": 1,
+            "link_filters": "[[\"Item Group\",\"is_group\",\"=\",0]]",
             "allow_on_submit": 1
         },
         {

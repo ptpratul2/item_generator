@@ -16,6 +16,22 @@ frappe.ready(function () {
 		}
 	};
 
+	// Show only leaf Item Groups in child table item_group link
+	let set_item_group_filter = function () {
+		if (frappe.web_form.fields_dict.items && frappe.web_form.fields_dict.items.grid) {
+			let grid = frappe.web_form.fields_dict.items.grid;
+			if (grid.get_field('item_group')) {
+				grid.get_field('item_group').get_query = function () {
+					return {
+						filters: {
+							'is_group': 0
+						}
+					};
+				};
+			}
+		}
+	};
+
 	// Hide item_created field from the grid as it's a status field
 	if (frappe.web_form.fields_dict.items && frappe.web_form.fields_dict.items.grid) {
 		let grid = frappe.web_form.fields_dict.items.grid;
@@ -58,6 +74,7 @@ frappe.ready(function () {
 	// Trigger on load
 	let company = frappe.web_form.get_value('company');
 	let cost_center_load = frappe.web_form.get_value('cost_center');
+	set_item_group_filter();
 
 	if (company) {
 		set_expense_account_filter(company);
