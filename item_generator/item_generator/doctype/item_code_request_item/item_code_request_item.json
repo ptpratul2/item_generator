@@ -96,7 +96,7 @@
             "fieldtype": "Link",
             "in_list_view": 1,
             "label": "Expense Account",
-            "mandatory_depends_on": "eval:doc.is_asset_item==0 && (doc.workflow_state==\"Pending Account Verification\" || doc.workflow_state==\"Approved\")"
+            "mandatory_depends_on": "eval:doc.is_asset_item==0 && (doc.workflow_state==\"Pending Account Verification\" || doc.workflow_state==\"Approved\")",
             "options": "Account"
         },
         {
