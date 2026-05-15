@@ -30,9 +30,10 @@
             "allow_on_submit": 1,
             "columns": 1,
             "fieldname": "hsn_code",
-            "fieldtype": "Data",
+            "fieldtype": "Link",
             "in_list_view": 1,
-            "label": "HSN Code"
+            "label": "HSN Code",
+            "options":"GST HSN Code"
         },
         {
             "columns": 2,
