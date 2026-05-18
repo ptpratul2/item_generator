@@ -5,7 +5,7 @@
    "label": "Items Created Timeline"
   }
  ],
- "content": "[{\"id\":\"TUdgXcqbWY\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Item Generator</span>\",\"col\":12}},{\"id\":\"clXTj7ZZ_L\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Items Created Timeline\",\"col\":12}},{\"id\":\"OCzMD9QYsC\",\"type\":\"card\",\"data\":{\"card_name\":\"Item\",\"col\":4}}]",
+ "content": "[{\"id\":\"TUdgXcqbWY\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Item Generator</span>\",\"col\":12}},{\"id\":\"clXTj7ZZ_L\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Items Created Timeline\",\"col\":12}},{\"id\":\"NGaw5VFVbo\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Item Request Form\",\"col\":3}},{\"id\":\"-MSeX5U8a7\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Item Request Dashboard\",\"col\":3}},{\"id\":\"iFjRAttGxq\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Item Code Request\",\"col\":3}},{\"id\":\"ucHW4qcDIV\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"OCzMD9QYsC\",\"type\":\"card\",\"data\":{\"card_name\":\"Item\",\"col\":4}}]",
  "creation": "2024-01-01 10:00:00",
  "custom_blocks": [],
  "docstatus": 0,
@@ -15,7 +15,7 @@
  "icon": "edit-round",
  "idx": 0,
  "indicator_color": "",
- "is_hidden": 0,
+ "is_hidden": 1,
  "label": "Item Generator",
  "links": [
   {
@@ -48,7 +48,7 @@
    "type": "Link"
   }
  ],
- "modified": "2026-01-19 12:18:45.234928",
+ "modified": "2026-05-09 11:30:36.675827",
  "modified_by": "Administrator",
  "module": "Item Generator",
  "name": "Item Generator",
@@ -59,6 +59,28 @@
  "quick_lists": [],
  "roles": [],
  "sequence_id": 1.0,
- "shortcuts": [],
+ "shortcuts": [
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Item Request Form",
+   "type": "URL",
+   "url": "/item-code-request"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Item Request Dashboard",
+   "link_to": "Item Request Dashboard",
+   "type": "Dashboard"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Item Code Request",
+   "link_to": "Item Code Request",
+   "type": "Dashboard"
+  }
+ ],
  "title": "Item Generator"
 }
