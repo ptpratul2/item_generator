@@ -28,8 +28,12 @@ class ItemCodeRequest(Document):
 			if cint(item.is_asset_item) and not item.asset_category:
 				frappe.throw(f"Asset Category is required for item '{item.item_name}' when Is Asset Item is checked")
 			
-			# Validate expense account is filled before moving to Approved state
-			if self.workflow_state == "Pending Account Verification" and not item.expense_account:
+			# Validate expense account is filled before account verification (not for fixed assets)
+			if (
+				self.workflow_state == "Pending Account Verification"
+				and not cint(item.is_asset_item)
+				and not item.expense_account
+			):
 				frappe.throw(f"Expense Account is required for item '{item.item_name}' before approval")
 			
 			# Validate UOM is filled
@@ -173,7 +177,7 @@ class ItemCodeRequest(Document):
 		if not item_row.generated_code:
 			frappe.throw(f"Generated Code is required to create Item for '{item_row.item_name}'")
 		
-		if not item_row.expense_account:
+		if not cint(item_row.is_asset_item) and not item_row.expense_account:
 			frappe.throw(f"Expense Account is required to create Item for '{item_row.item_name}'")
 		
 		if not item_row.uom:
@@ -185,7 +189,10 @@ class ItemCodeRequest(Document):
 			item_row.db_update()
 			return
 		
-		# Create new Item
+		# Create new Item (ERPNext: fixed assets must be non-stock — validate_fixed_asset)
+		is_fixed_asset = cint(item_row.is_asset_item)
+		is_stock_item = 0 if is_fixed_asset else cint(item_row.is_stock_item)
+
 		item = frappe.get_doc({
 			"doctype": "Item",
 			"item_code": item_row.generated_code,
@@ -194,18 +201,20 @@ class ItemCodeRequest(Document):
 			"description": item_row.description or item_row.item_name,
 			"stock_uom": item_row.uom,
 			"gst_hsn_code": item_row.hsn_code,
-			"is_stock_item": item_row.is_stock_item,
-			"is_fixed_asset": item_row.is_asset_item,
-			"asset_category": item_row.asset_category if item_row.is_asset_item else None,
+			"is_stock_item": is_stock_item,
+			"is_fixed_asset": is_fixed_asset,
+			"asset_category": item_row.asset_category if is_fixed_asset else None,
 			"disabled": 0
 		})
 		
-		# Add default accounts (expense account)
-		item.append("item_defaults", {
+		# Add company defaults; expense account is optional for fixed asset items
+		defaults_row = {
 			"company": self.company or frappe.defaults.get_defaults().get("company"),
-			"expense_account": item_row.expense_account,
-			"default_warehouse": ""  # Prevent invalid global defaults from Item Group
-		})
+			"default_warehouse": "",  # Prevent invalid global defaults from Item Group
+		}
+		if item_row.expense_account:
+			defaults_row["expense_account"] = item_row.expense_account
+		item.append("item_defaults", defaults_row)
 		
 		item.insert(ignore_permissions=True)
 		
