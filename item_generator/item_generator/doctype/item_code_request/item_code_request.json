@@ -44,7 +44,8 @@
             "default": "now",
             "fieldname": "request_date",
             "fieldtype": "Datetime",
-            "label": "Request Date & Time"
+            "label": "Request Date & Time",
+            "allow_on_submit": 1
         },
         {
             "fieldname": "department",
