@@ -23,18 +23,39 @@ class ItemCodeRequest(Document):
 		# Similar item / duplicate validation
 		self._validate_no_duplicate_items()
 
+		# Expense account is required only when approving from Account Verification,
+		# not when entering that state (e.g. Verify HSN → Pending Account Verification).
+		previous_state = (
+			self._doc_before_save.get("workflow_state")
+			if getattr(self, "_doc_before_save", None)
+			else None
+		)
+		approving_from_account_verification = (
+			previous_state == "Pending Account Verification"
+			and self.workflow_state == "Approved"
+		)
+		rejecting_from_account_verification = (
+			previous_state == "Pending Account Verification"
+			and self.workflow_state == "Send to Ecode"
+		)
+
 		# Validate each item in the child table
 		for item in self.items:
-			if cint(item.is_asset_item) and not item.asset_category:
+			if (
+				not rejecting_from_account_verification
+				and cint(item.is_asset_item)
+				and not item.asset_category
+			):
 				frappe.throw(f"Asset Category is required for item '{item.item_name}' when Is Asset Item is checked")
 			
-			# Validate expense account is filled before account verification (not for fixed assets)
 			if (
-				self.workflow_state == "Pending Account Verification"
+				approving_from_account_verification
 				and not cint(item.is_asset_item)
 				and not item.expense_account
 			):
-				frappe.throw(f"Expense Account is required for item '{item.item_name}' before approval")
+				frappe.throw(
+					f"Expense Account is required for item '{item.item_name}' before approval"
+				)
 			
 			# Validate UOM is filled
 			if not item.uom:

@@ -12,11 +12,11 @@
   "uom",
   "is_stock_item",
   "is_asset_item",
+   "asset_code",
   "asset_category",
   "expense_account",
   "generated_code",
-  "item_created",
-  "asset_code"
+  "item_created"
  ],
  "fields": [
   {
@@ -95,6 +95,7 @@
    "allow_on_submit": 1,
    "columns": 2,
    "fieldname": "expense_account",
+   "depends_on": "eval:doc.is_asset_item==0 && parent.workflow_state==\"Pending Account Verification\"",
    "fieldtype": "Link",
    "in_list_view": 1,
    "label": "Expense Account",
@@ -120,6 +121,7 @@
   },
   {
    "fieldname": "asset_code",
+   "depends_on": "eval:doc.is_asset_item == 1",
    "fieldtype": "Data",
    "label": "Asset Code",
    "mandatory_depends_on": "eval:doc.is_asset_item == 1"

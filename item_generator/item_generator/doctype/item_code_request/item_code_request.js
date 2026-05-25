@@ -1,6 +1,21 @@
 // Copyright (c) 2024, Pratul Tiwari and contributors
 // For license information, please see license.txt
 
+// Reject from Account Verification must not require expense account / state-specific mandatories.
+(function () {
+	const original_check_mandatory = frappe.ui.form.check_mandatory;
+	frappe.ui.form.check_mandatory = function (frm) {
+		if (
+			frm.doctype === 'Item Code Request' &&
+			frm.selected_workflow_action === 'Reject' &&
+			frm.doc.workflow_state === 'Pending Account Verification'
+		) {
+			return true;
+		}
+		return original_check_mandatory(frm);
+	};
+})();
+
 frappe.ui.form.on('Item Code Request', {
 	setup: function (frm) {
 		frm.set_query('cost_center', function () {
