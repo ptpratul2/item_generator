@@ -17,6 +17,17 @@ class ItemCodeRequest(Document):
 
 	def validate(self):
 		"""Validate Item Code Request"""
+		previous_state = (
+			self._doc_before_save.get("workflow_state")
+			if getattr(self, "_doc_before_save", None)
+			else None
+		)
+		is_workflow_reject = (
+			previous_state
+			and previous_state != "Send to Ecode"
+			and self.workflow_state == "Send to Ecode"
+		)
+
 		# Auto-fill fields if empty
 		self.auto_fill_fields()
 
@@ -25,25 +36,26 @@ class ItemCodeRequest(Document):
 
 		# Expense account is required only when approving from Account Verification,
 		# not when entering that state (e.g. Verify HSN → Pending Account Verification).
-		previous_state = (
-			self._doc_before_save.get("workflow_state")
-			if getattr(self, "_doc_before_save", None)
-			else None
-		)
 		approving_from_account_verification = (
 			previous_state == "Pending Account Verification"
 			and self.workflow_state == "Approved"
 		)
-		is_workflow_reject = (
-			previous_state
-			and previous_state != "Send to Ecode"
-			and self.workflow_state == "Send to Ecode"
+		advancing_from_codification = (
+			previous_state == "Pending Codification"
+			and self.workflow_state == "Pending HSN Verification"
 		)
 
 		# Validate each item in the child table
 		for item in self.items:
 			if is_workflow_reject:
 				continue
+
+			if advancing_from_codification and not item.generated_code:
+				frappe.throw(
+					frappe._(
+						"Generated Code is required for item '{0}' before sending to HSN verification"
+					).format(item.item_name)
+				)
 
 			if cint(item.is_asset_item) and not item.asset_category:
 				frappe.throw(f"Asset Category is required for item '{item.item_name}' when Is Asset Item is checked")

@@ -44,7 +44,7 @@ frappe.ui.form.on('Item Code Request', {
 		// Show notification for Codification Users
 		if (frappe.user.has_role('Codification User') &&
 			frm.doc.workflow_state === 'Pending Codification' &&
-			frm.doc.docstatus === 1) {
+			frm.doc.docstatus === 0) {
 
 			// Check if all items have generated codes
 			let items_without_code = frm.doc.items.filter(item => !item.generated_code).length;
@@ -100,6 +100,23 @@ frappe.ui.form.on('Item Code Request', {
 	validate: function (frm) {
 		// Update summary before save
 		update_summary(frm);
+	},
+
+	before_workflow_action: function (frm) {
+		if (frm.selected_workflow_action === 'Reject') {
+			return;
+		}
+		if (
+			frm.doc.workflow_state === 'Pending Codification' &&
+			frm.selected_workflow_action === 'Add Code'
+		) {
+			let items_without_code = frm.doc.items.filter((item) => !item.generated_code).length;
+			if (items_without_code > 0) {
+				frappe.throw(
+					__('Please add Generated Codes for {0} item(s).', [items_without_code])
+				);
+			}
+		}
 	},
 
 	cost_center: function (frm) {
@@ -173,7 +190,7 @@ frappe.ui.form.on('Item Code Request Item', {
 		// Make generated_code editable only for Codification Users in Pending Codification state
 		if (frappe.user.has_role('Codification User') &&
 			frm.doc.workflow_state === 'Pending Codification' &&
-			frm.doc.docstatus === 1) {
+			frm.doc.docstatus === 0) {
 			// Field is editable
 			if (grid_row) {
 				grid_row.toggle_editable('generated_code', true);
