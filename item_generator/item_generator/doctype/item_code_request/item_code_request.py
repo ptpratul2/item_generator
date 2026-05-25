@@ -34,18 +34,18 @@ class ItemCodeRequest(Document):
 			previous_state == "Pending Account Verification"
 			and self.workflow_state == "Approved"
 		)
-		rejecting_from_account_verification = (
-			previous_state == "Pending Account Verification"
+		is_workflow_reject = (
+			previous_state
+			and previous_state != "Send to Ecode"
 			and self.workflow_state == "Send to Ecode"
 		)
 
 		# Validate each item in the child table
 		for item in self.items:
-			if (
-				not rejecting_from_account_verification
-				and cint(item.is_asset_item)
-				and not item.asset_category
-			):
+			if is_workflow_reject:
+				continue
+
+			if cint(item.is_asset_item) and not item.asset_category:
 				frappe.throw(f"Asset Category is required for item '{item.item_name}' when Is Asset Item is checked")
 			
 			if (
@@ -57,7 +57,6 @@ class ItemCodeRequest(Document):
 					f"Expense Account is required for item '{item.item_name}' before approval"
 				)
 			
-			# Validate UOM is filled
 			if not item.uom:
 				frappe.throw(f"UOM (Unit of Measure) is required for item '{item.item_name}'")
 		
