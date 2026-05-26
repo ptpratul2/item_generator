@@ -78,15 +78,17 @@
   },
   {
    "allow_read_on_all_link_options": 0,
+   "default": "__user",
+   "description": "Enter your registered email address (login ID). Select from the list — do not type your display name.",
    "fieldname": "requested_by",
    "fieldtype": "Link",
    "hidden": 0,
-   "label": "Requested By",
+   "label": "Requested By (Email)",
    "max_length": 0,
    "max_value": 0,
    "options": "User",
    "read_only": 0,
-   "reqd": 0,
+   "reqd": 1,
    "show_in_filter": 0
   },
   {

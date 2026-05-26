@@ -5,7 +5,7 @@
 from __future__ import unicode_literals
 import frappe
 from frappe.model.document import Document
-from frappe.utils import cint
+from frappe.utils import cint, validate_email_address
 
 class ItemCodeRequest(Document):
 	def before_insert(self):
@@ -30,6 +30,7 @@ class ItemCodeRequest(Document):
 
 		# Auto-fill fields if empty
 		self.auto_fill_fields()
+		self._validate_and_normalize_requested_by()
 
 		# Similar item / duplicate validation
 		self._validate_no_duplicate_items()
@@ -99,6 +100,48 @@ class ItemCodeRequest(Document):
 						item_name, exact_match[0].item_code
 					)
 				)
+
+	def _validate_and_normalize_requested_by(self):
+		"""Ensure requested_by is a valid User (email / login ID), not a display name."""
+		if not self.requested_by:
+			self.requested_by = frappe.session.user
+			return
+
+		value = (self.requested_by or "").strip()
+		if not value:
+			self.requested_by = frappe.session.user
+			return
+
+		if frappe.db.exists("User", value):
+			self.requested_by = value
+			return
+
+		user_row = frappe.db.sql(
+			"SELECT name FROM `tabUser` WHERE LOWER(name) = LOWER(%s) LIMIT 1",
+			(value,),
+			as_dict=True,
+		)
+		if user_row:
+			self.requested_by = user_row[0].name
+			return
+
+		if "@" in value:
+			email = validate_email_address(value, throw=False)
+			if email:
+				user = frappe.db.get_value("User", email, "name") or frappe.db.get_value(
+					"User", {"email": email}, "name"
+				)
+				if user:
+					self.requested_by = user
+					return
+
+		frappe.throw(
+			frappe._(
+				"Requested By must be your registered email address (login ID). "
+				"'{0}' is not a valid user. Please select your email from the dropdown — "
+				"do not enter your display name."
+			).format(value)
+		)
 
 	def auto_fill_fields(self):
 		"""Auto-fill request details if empty"""

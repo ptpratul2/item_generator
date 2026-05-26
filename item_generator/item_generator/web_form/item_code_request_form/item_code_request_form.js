@@ -70,7 +70,13 @@ frappe.ready(function () {
 		}
 	});
 
-	// Trigger on load
+	// Default Requested By to logged-in user's email (login ID)
+	if (frappe.session.user && frappe.session.user !== "Guest") {
+		if (!frappe.web_form.get_value("requested_by")) {
+			frappe.web_form.set_value("requested_by", frappe.session.user);
+		}
+	}
+
 	// Trigger on load
 	let company = frappe.web_form.get_value('company');
 	let cost_center_load = frappe.web_form.get_value('cost_center');
@@ -354,8 +360,30 @@ frappe.ready(function () {
 	}
 	// ========== End Similar Item Detection ==========
 
+	function validate_requested_by() {
+		const requested_by = (frappe.web_form.get_value("requested_by") || "").trim();
+		if (!requested_by) {
+			return true;
+		}
+		if (!requested_by.includes("@")) {
+			frappe.msgprint({
+				title: __("Invalid Requested By"),
+				message: __(
+					"Please enter your registered email address (login ID), not your display name. Select your email from the dropdown list."
+				),
+				indicator: "red",
+			});
+			return false;
+		}
+		return true;
+	}
+
 	// Web form validate event
 	frappe.web_form.validate = function () {
+		if (!validate_requested_by()) {
+			return false;
+		}
+
 		// Reset item_created to 0 for all items (safety check)
 		let data = frappe.web_form.get_values();
 		if (data.items) {
