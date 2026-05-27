@@ -24,8 +24,8 @@ class ItemCodeRequest(Document):
 		)
 		is_workflow_reject = (
 			previous_state
-			and previous_state != "Send to Ecode"
-			and self.workflow_state == "Send to Ecode"
+			and previous_state != "draft"
+			and self.workflow_state == "draft"
 		)
 
 		# Auto-fill fields if empty
