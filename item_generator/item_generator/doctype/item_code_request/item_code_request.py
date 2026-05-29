@@ -58,6 +58,17 @@ class ItemCodeRequest(Document):
 					).format(item.item_name)
 				)
 
+			if (
+				advancing_from_codification
+				and cint(item.is_asset_item)
+				and not (item.asset_code or "").strip()
+			):
+				frappe.throw(
+					frappe._(
+						"Asset Code is required for item '{0}' before sending to Account verification"
+					).format(item.item_name)
+				)
+
 			if cint(item.is_asset_item) and not item.asset_category:
 				frappe.throw(f"Asset Category is required for item '{item.item_name}' when Is Asset Item is checked")
 			

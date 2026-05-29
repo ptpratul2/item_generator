@@ -116,6 +116,14 @@ frappe.ui.form.on('Item Code Request', {
 					__('Please add Generated Codes for {0} item(s).', [items_without_code])
 				);
 			}
+			let asset_items_without_code = frm.doc.items.filter(
+				(item) => item.is_asset_item && !(item.asset_code || '').trim()
+			).length;
+			if (asset_items_without_code > 0) {
+				frappe.throw(
+					__('Please add Asset Codes for {0} asset item(s).', [asset_items_without_code])
+				);
+			}
 		}
 	},
 
