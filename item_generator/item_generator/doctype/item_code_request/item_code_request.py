@@ -321,25 +321,3 @@ def on_update_after_submit_hook(doc, method):
 	doc.on_update_after_submit()
 
 
-@frappe.whitelist()
-def get_total_items_requested():
-	"""Get total count of all items requested across all requests"""
-	result = frappe.db.sql("""
-		SELECT SUM(total_items) as total
-		FROM `tabItem Code Request`
-		WHERE docstatus != 2
-	""", as_dict=True)
-	
-	return result[0].total if result and result[0].total else 0
-
-
-@frappe.whitelist()
-def get_total_items_created():
-	"""Get total count of all items created in ERPNext"""
-	result = frappe.db.sql("""
-		SELECT SUM(items_created) as total
-		FROM `tabItem Code Request`
-		WHERE workflow_state = 'Approved' AND docstatus = 1
-	""", as_dict=True)
-	
-	return result[0].total if result and result[0].total else 0

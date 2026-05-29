@@ -5,31 +5,5 @@ import frappe
 
 
 def get_context(context):
-	"""Called before rendering the web form"""
-	# You can modify the context here if needed
-	# For example, add custom data, set default values, etc.
+	"""Called before rendering the web form."""
 	pass
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

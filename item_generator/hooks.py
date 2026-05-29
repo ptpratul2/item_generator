@@ -11,34 +11,25 @@ app_license = "mit"
 # required_apps = []
 
 # Each item in the list will be shown as an app in the apps page
-# add_to_apps_screen = [
-# 	{
-# 		"name": "item_generator",
-# 		"logo": "/assets/item_generator/logo.png",
-# 		"title": "Item Generator",
-# 		"route": "/item_generator",
-# 		"has_permission": "item_generator.api.permission.has_app_permission"
-# 	}
-# ]
+add_to_apps_screen = [
+	{
+		"name": "item_generator",
+		"logo": "/assets/frappe/images/ui/bubble-tea.svg",
+		"title": "Item Generator",
+		"route": "/app/item-generator-analytics",
+		"has_permission": "item_generator.api.dashboard.has_app_permission",
+	}
+]
 
 # Includes in <head>
 # ------------------
 
 # include js, css files in header of desk.html
-# app_include_css = "/assets/item_generator/css/item_generator.css"
-# app_include_js = "/assets/item_generator/js/item_generator.js"
-
-# include js, css files in header of web template
-# web_include_css = "/assets/item_generator/css/item_generator.css"
-# web_include_js = "/assets/item_generator/js/item_generator.js"
-
-# include custom scss in every website theme (without file extension ".scss")
-# website_theme_scss = "item_generator/public/scss/website"
+# app_include_css = "/assets/item_generator/css/item_generator_analytics.css"
+# app_include_js = "/assets/item_generator/js/item_request.js"
 
 # include js, css files in header of web form
-# Similar item detection is in item_code_request_form.js (no duplicate)
-# webform_include_js = {"Item Code Request": "public/js/item_generator.js"}
-# webform_include_css = {"Item Code Request": "public/css/item_generator.css"}
+# Similar item detection is in item_code_request_form/item_code_request_form.js
 
 # include js in page
 # page_js = {"page" : "public/js/file.js"}

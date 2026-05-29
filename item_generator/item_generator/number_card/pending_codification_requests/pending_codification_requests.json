@@ -1,0 +1,22 @@
+{
+ "creation": "2026-05-29 16:30:00.000000",
+ "docstatus": 0,
+ "doctype": "Number Card",
+ "document_type": "Item Code Request",
+ "dynamic_filters_json": "[]",
+ "filters_config": "[]",
+ "filters_json": "[]",
+ "function": "Count",
+ "idx": 0,
+ "is_public": 1,
+ "is_standard": 1,
+ "label": "Pending Codification",
+ "method": "item_generator.api.dashboard.get_number_pending_codification",
+ "modified": "2026-05-29 16:30:00.000000",
+ "modified_by": "Administrator",
+ "module": "Item Generator",
+ "name": "Pending Codification",
+ "owner": "Administrator",
+ "show_percentage_stats": 0,
+ "type": "Custom"
+}
