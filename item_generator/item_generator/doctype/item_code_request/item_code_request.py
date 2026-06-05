@@ -34,6 +34,8 @@ class ItemCodeRequest(Document):
 
 		# Similar item / duplicate validation
 		self._validate_no_duplicate_items()
+		if not is_workflow_reject:
+			self._validate_generated_codes()
 
 		# Expense account is required only when approving from Account Verification,
 		# not when entering that state (e.g. Verify HSN → Pending Account Verification).
@@ -111,6 +113,102 @@ class ItemCodeRequest(Document):
 						item_name, exact_match[0].item_code
 					)
 				)
+
+	def _normalize_text_for_compare(self, value):
+		"""Normalize user-entered text for stable comparisons."""
+		text = (value or "").replace("&amp;", "&")
+		return " ".join(text.split()).strip()
+
+	def _find_other_request_using_code(self, generated_code):
+		"""Find the latest request (other than current) using the same generated code."""
+		rows = frappe.db.sql(
+			"""
+			SELECT parent, idx, item_name
+			FROM `tabItem Code Request Item`
+			WHERE generated_code = %s
+			  AND parent != %s
+			ORDER BY modified DESC
+			LIMIT 1
+			""",
+			(generated_code, self.name or ""),
+			as_dict=True,
+		)
+		return rows[0] if rows else None
+
+	def _validate_generated_code_mapping(self, item_row):
+		"""Ensure generated code maps to the same item details and is not reused."""
+		generated_code = (item_row.generated_code or "").strip()
+		if not generated_code:
+			return
+
+		existing_item = frappe.db.get_value(
+			"Item",
+			generated_code,
+			["name", "item_name", "description"],
+			as_dict=True,
+		)
+		if not existing_item:
+			return
+
+		source_row = self._find_other_request_using_code(generated_code)
+		if source_row:
+			frappe.throw(
+				frappe._(
+					"Generated Code '{0}' is already used in request {1} (row {2}, item '{3}'). "
+					"Please enter a unique Generated Code."
+				).format(
+					generated_code,
+					source_row.parent,
+					source_row.idx,
+					source_row.item_name or "",
+				)
+			)
+
+		expected_name = self._normalize_text_for_compare(item_row.item_name)
+		expected_description = self._normalize_text_for_compare(
+			item_row.description or item_row.item_name
+		)
+		existing_name = self._normalize_text_for_compare(existing_item.item_name)
+		existing_description = self._normalize_text_for_compare(existing_item.description)
+
+		if expected_name != existing_name or expected_description != existing_description:
+			frappe.throw(
+				frappe._(
+					"Generated Code '{0}' already exists with different details. "
+					"Existing Item Name: '{1}', Description: '{2}'. "
+					"Current Request Item Name: '{3}', Description: '{4}'."
+				).format(
+					generated_code,
+					existing_item.item_name or "",
+					existing_item.description or "",
+					item_row.item_name or "",
+					item_row.description or item_row.item_name or "",
+				)
+			)
+
+	def _validate_generated_codes(self):
+		"""Validate generated code uniqueness within request and mapping with Item."""
+		seen_codes = {}
+		for item in self.items:
+			generated_code = (item.generated_code or "").strip()
+			if not generated_code:
+				continue
+
+			if generated_code in seen_codes:
+				first_item = seen_codes[generated_code]
+				frappe.throw(
+					frappe._(
+						"Generated Code '{0}' is duplicated in this request for '{1}' and '{2}'. "
+						"Generated Code must be unique per row."
+					).format(
+						generated_code,
+						first_item.item_name or "",
+						item.item_name or "",
+					)
+				)
+
+			seen_codes[generated_code] = item
+			self._validate_generated_code_mapping(item)
 
 	def _validate_and_normalize_requested_by(self):
 		"""Ensure requested_by is a valid User (email / login ID), not a display name."""
@@ -211,6 +309,7 @@ class ItemCodeRequest(Document):
 				continue
 			
 			if frappe.db.exists("Item", item_row.generated_code):
+				self._validate_generated_code_mapping(item_row)
 				item_row.item_created = 1
 				item_row.db_update()
 				continue
@@ -270,6 +369,7 @@ class ItemCodeRequest(Document):
 			frappe.throw(f"UOM is required to create Item for '{item_row.item_name}'")
 		
 		if frappe.db.exists("Item", item_row.generated_code):
+			self._validate_generated_code_mapping(item_row)
 			frappe.msgprint(f"Item {item_row.generated_code} already exists in ERPNext.")
 			item_row.item_created = 1
 			item_row.db_update()

@@ -40,12 +40,14 @@ class ItemGeneratorAnalytics {
 				</div>
 
 				<div class="iga-filters-card">
-					<div class="iga-section-title">${__("Filters")}</div>
-					<div class="iga-filters-grid"></div>
-					<div class="iga-filters-actions">
-						<button class="btn btn-default btn-sm btn-clear-filters">${__("Clear")}</button>
-						<button class="btn btn-primary btn-sm btn-apply-filters">${__("Apply Filters")}</button>
+					<div class="iga-filters-toolbar">
+						<div class="iga-section-title">${__("Filters")}</div>
+						<div class="iga-filters-actions">
+							<button type="button" class="btn btn-default btn-sm btn-clear-filters">${__("Clear")}</button>
+							<button type="button" class="btn btn-primary btn-sm btn-apply-filters">${__("Apply Filters")}</button>
+						</div>
 					</div>
+					<div class="iga-filters-row"></div>
 				</div>
 
 				<div class="iga-kpi-grid"></div>
@@ -97,36 +99,63 @@ class ItemGeneratorAnalytics {
 	}
 
 	render_filters() {
-		const fields = [
+		const $row = this.wrapper.find(".iga-filters-row");
+		$row.empty();
+		this.filter_fields = {};
+
+		const field_defs = [
 			{ fieldname: "company", label: __("Company"), fieldtype: "Link", options: "Company" },
 			{ fieldname: "cost_center", label: __("Cost Center"), fieldtype: "Link", options: "Cost Center" },
 			{ fieldname: "requested_by", label: __("Requested By"), fieldtype: "Link", options: "User" },
-			{ fieldname: "workflow_state", label: __("Workflow State"), fieldtype: "Link", options: "Workflow State" },
+			{
+				fieldname: "workflow_state",
+				label: __("Workflow State"),
+				fieldtype: "Link",
+				options: "Workflow State",
+			},
 			{ fieldname: "from_date", label: __("From Date"), fieldtype: "Date" },
 			{ fieldname: "to_date", label: __("To Date"), fieldtype: "Date" },
 		];
 
-		this.filter_group = new frappe.ui.FieldGroup({
-			fields,
-			body: this.wrapper.find(".iga-filters-grid")[0],
+		field_defs.forEach((df) => {
+			const $item = $(`
+				<div class="iga-filter-item" data-fieldname="${df.fieldname}">
+					<label class="iga-filter-label" for="iga-filter-${df.fieldname}">${df.label}</label>
+					<div class="iga-filter-control"></div>
+				</div>
+			`);
+			$row.append($item);
+
+			const control = frappe.ui.form.make_control({
+				df: {
+					fieldtype: df.fieldtype,
+					fieldname: df.fieldname,
+					label: df.label,
+					options: df.options,
+					placeholder: df.label,
+				},
+				parent: $item.find(".iga-filter-control")[0],
+				render_input: true,
+			});
+			control.make();
+			control.refresh();
+			this.filter_fields[df.fieldname] = control;
 		});
-		this.filter_group.make();
 	}
 
 	clear_filters() {
-		if (this.filter_group) {
-			this.filter_group.clear();
-		}
+		Object.values(this.filter_fields || {}).forEach((control) => {
+			control.set_value("");
+		});
 		this.refresh();
 	}
 
 	get_filters() {
-		if (!this.filter_group) return {};
-		const values = this.filter_group.get_values() || {};
 		const filters = {};
-		Object.keys(values).forEach((key) => {
-			if (values[key] !== null && values[key] !== undefined && values[key] !== "") {
-				filters[key] = values[key];
+		Object.entries(this.filter_fields || {}).forEach(([fieldname, control]) => {
+			const value = control.get_value();
+			if (value !== null && value !== undefined && value !== "") {
+				filters[fieldname] = value;
 			}
 		});
 		return filters;
