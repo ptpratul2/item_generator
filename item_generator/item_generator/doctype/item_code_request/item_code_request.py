@@ -421,3 +421,31 @@ def on_update_after_submit_hook(doc, method):
 	doc.on_update_after_submit()
 
 
+@frappe.whitelist()
+def get_leaf_item_groups_for_webform(txt=None, page_length=50):
+	"""Return only leaf Item Groups for webform autocomplete."""
+	txt = (txt or "").strip()
+	page_length = cint(page_length) if page_length else 50
+	page_length = min(max(page_length, 1), 1000)
+
+	filters = {"is_group": 0}
+	if txt:
+		filters["name"] = ["like", f"%{txt}%"]
+
+	rows = frappe.get_all(
+		"Item Group",
+		filters=filters,
+		fields=["name", "parent_item_group"],
+		limit_page_length=page_length,
+		order_by="name asc",
+	)
+
+	return [
+		{
+			"value": row.name,
+			"label": row.name,
+			"description": row.parent_item_group,
+		}
+		for row in rows
+	]
+

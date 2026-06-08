@@ -1,34 +1,159 @@
 frappe.ready(function () {
-	// Function to set filter on child table field
-	let set_expense_account_filter = function (company) {
-		if (frappe.web_form.fields_dict.items && frappe.web_form.fields_dict.items.grid) {
-			let grid = frappe.web_form.fields_dict.items.grid;
-			if (grid.get_field('expense_account')) {
-				grid.get_field('expense_account').get_query = function () {
-					return {
-						filters: {
-							'company': company,
-							'is_group': 0
-						}
-					};
-				};
+	let cached_leaf_item_group_options = null;
+	let leaf_item_group_request = null;
+
+	let get_items_grid = function () {
+		return frappe.web_form.fields_dict.items && frappe.web_form.fields_dict.items.grid
+			? frappe.web_form.fields_dict.items.grid
+			: null;
+	};
+
+	let get_leaf_item_group_options = function () {
+		if (cached_leaf_item_group_options) {
+			return Promise.resolve(cached_leaf_item_group_options);
+		}
+		if (leaf_item_group_request) {
+			return leaf_item_group_request;
+		}
+
+		leaf_item_group_request = new Promise((resolve) => {
+			frappe.call({
+				method: "frappe.client.get_list",
+				args: {
+					doctype: "Item Group",
+					fields: ["name", "parent_item_group"],
+					filters: {
+						is_group: 0
+					},
+					order_by: "name asc",
+					limit_page_length: 1000
+				},
+				callback: function (r) {
+					cached_leaf_item_group_options = (r.message || []).map((row) => ({
+						value: row.name,
+						label: row.name,
+						description: row.parent_item_group || ""
+					}));
+					resolve(cached_leaf_item_group_options);
+				},
+				error: function () {
+					resolve([]);
+				},
+				always: function () {
+					leaf_item_group_request = null;
+				}
+			});
+		});
+
+		return leaf_item_group_request;
+	};
+
+	let apply_item_group_options_to_grid = function (options) {
+		let grid = get_items_grid();
+		if (!grid) return;
+
+		let item_group_field = grid.get_field("item_group");
+		if (item_group_field && item_group_field.df) {
+			item_group_field.df.options = options;
+		}
+
+		if (grid.docfields) {
+			let item_group_df = grid.docfields.find((df) => df.fieldname === "item_group");
+			if (item_group_df) {
+				item_group_df.options = options;
 			}
 		}
+
+		(grid.grid_rows || []).forEach((row) => {
+			let inline_control = row?.columns?.item_group?.field;
+			if (inline_control) {
+				inline_control.df.options = options;
+				inline_control.get_query = null;
+				inline_control.df.get_query = null;
+				if (inline_control.set_data) inline_control.set_data(options);
+			}
+
+			let form_control = row?.grid_form?.fields_dict?.item_group;
+			if (form_control) {
+				form_control.df.options = options;
+				form_control.get_query = null;
+				form_control.df.get_query = null;
+				if (form_control.set_data) form_control.set_data(options);
+			}
+		});
+	};
+
+	// Function to set filter on child table field
+	let set_expense_account_filter = function (company) {
+		let grid = get_items_grid();
+		if (!grid) return false;
+
+		const company_value = company || frappe.web_form.get_value("company");
+		let query_fn = function () {
+			return {
+				filters: {
+					company: company_value,
+					is_group: 0
+				}
+			};
+		};
+
+		let expense_field = grid.get_field("expense_account");
+		if (expense_field) {
+			expense_field.get_query = query_fn;
+			if (expense_field.df) expense_field.df.get_query = query_fn;
+		}
+
+		if (grid.docfields) {
+			let expense_df = grid.docfields.find((df) => df.fieldname === "expense_account");
+			if (expense_df) expense_df.get_query = query_fn;
+		}
+
+		return !!expense_field;
 	};
 
 	// Show only leaf Item Groups in child table item_group link
 	let set_item_group_filter = function () {
-		if (frappe.web_form.fields_dict.items && frappe.web_form.fields_dict.items.grid) {
-			let grid = frappe.web_form.fields_dict.items.grid;
-			if (grid.get_field('item_group')) {
-				grid.get_field('item_group').get_query = function () {
-					return {
-						filters: {
-							'is_group': 0
-						}
-					};
-				};
+		let grid = get_items_grid();
+		if (!grid) return false;
+
+		let item_group_field = grid.get_field("item_group");
+		if (item_group_field) {
+			item_group_field.get_query = null;
+			if (item_group_field.df) item_group_field.df.get_query = null;
+		}
+
+		if (grid.docfields) {
+			let item_group_df = grid.docfields.find((df) => df.fieldname === "item_group");
+			if (item_group_df) {
+				item_group_df.get_query = null;
 			}
+		}
+
+		get_leaf_item_group_options().then((options) => {
+			apply_item_group_options_to_grid(options);
+		});
+
+		return !!item_group_field;
+	};
+
+	// Web form may render table controls asynchronously; retry until filters are bound.
+	let bind_grid_filters = function (retry = 0) {
+		let has_item_group_filter = set_item_group_filter();
+		let has_expense_filter = set_expense_account_filter();
+
+		if (
+			(!has_item_group_filter || !has_expense_filter) &&
+			retry < 10
+		) {
+			setTimeout(() => bind_grid_filters(retry + 1), 300);
+		}
+	};
+
+	let ensure_request_date_value = function () {
+		let request_date = frappe.web_form.get_value("request_date");
+		if (!request_date || request_date === "Today" || request_date === "current_date") {
+			frappe.web_form.set_value("request_date", frappe.datetime.nowdate());
 		}
 	};
 
@@ -68,6 +193,7 @@ frappe.ready(function () {
 		if (value) {
 			set_expense_account_filter(value);
 		}
+		bind_grid_filters();
 	});
 
 	// Default Requested By to logged-in user's email (login ID)
@@ -80,7 +206,11 @@ frappe.ready(function () {
 	// Trigger on load
 	let company = frappe.web_form.get_value('company');
 	let cost_center_load = frappe.web_form.get_value('cost_center');
-	set_item_group_filter();
+	ensure_request_date_value();
+	bind_grid_filters();
+	get_leaf_item_group_options().then((options) => {
+		apply_item_group_options_to_grid(options);
+	});
 
 	if (company) {
 		set_expense_account_filter(company);
@@ -360,6 +490,18 @@ frappe.ready(function () {
 	}
 	// ========== End Similar Item Detection ==========
 
+	$(document).on("focus click", ".web-form-wrapper [data-fieldname='item_group'] input", function () {
+		let input = this;
+		set_item_group_filter();
+		get_leaf_item_group_options().then((options) => {
+			apply_item_group_options_to_grid(options);
+			if (input && input.awesomplete) {
+				input.awesomplete.list = options;
+				input.awesomplete.evaluate();
+			}
+		});
+	});
+
 	function validate_requested_by() {
 		const requested_by = (frappe.web_form.get_value("requested_by") || "").trim();
 		if (!requested_by) {
@@ -383,6 +525,8 @@ frappe.ready(function () {
 		if (!validate_requested_by()) {
 			return false;
 		}
+
+		ensure_request_date_value();
 
 		// Reset item_created to 0 for all items (safety check)
 		let data = frappe.web_form.get_values();
