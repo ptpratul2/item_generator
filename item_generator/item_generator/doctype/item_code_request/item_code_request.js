@@ -103,7 +103,7 @@ frappe.ui.form.on('Item Code Request', {
 	},
 
 	before_workflow_action: function (frm) {
-		if (frm.selected_workflow_action === 'Reject') {
+		if (frm.selected_workflow_action === 'Review' || frm.selected_workflow_action === 'Review to Ecode' ) {
 			return;
 		}
 		if (
