@@ -1,11 +1,24 @@
 // Copyright (c) 2024, Pratul Tiwari and contributors
 // For license information, please see license.txt
 
-// Reject must not block on mandatory / mandatory_depends_on fields (any workflow state).
+// Review / Send to Ecode / Discard should not block on mandatory fields.
 (function () {
+	const SKIP_MANDATORY_ACTIONS = new Set([
+		"reject", // backward compatibility
+		"review",
+		"review to ecode",
+		"send to ecode",
+		"discard"
+	]);
+
+	const should_skip_mandatory = (frm) => {
+		const action = (frm.selected_workflow_action || "").trim().toLowerCase();
+		return frm.doctype === "Item Code Request" && SKIP_MANDATORY_ACTIONS.has(action);
+	};
+
 	const original_check_mandatory = frappe.ui.form.check_mandatory;
 	frappe.ui.form.check_mandatory = function (frm) {
-		if (frm.doctype === 'Item Code Request' && frm.selected_workflow_action === 'Reject') {
+		if (should_skip_mandatory(frm)) {
 			return true;
 		}
 		return original_check_mandatory(frm);
@@ -103,7 +116,13 @@ frappe.ui.form.on('Item Code Request', {
 	},
 
 	before_workflow_action: function (frm) {
-		if (frm.selected_workflow_action === 'Review' || frm.selected_workflow_action === 'Review to Ecode' ) {
+		const action = (frm.selected_workflow_action || '').trim().toLowerCase();
+		if (
+			action === 'review' ||
+			action === 'review to ecode' ||
+			action === 'send to ecode' ||
+			action === 'discard'
+		) {
 			return;
 		}
 		if (

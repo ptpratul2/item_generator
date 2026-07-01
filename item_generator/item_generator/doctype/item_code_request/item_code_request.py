@@ -22,10 +22,24 @@ class ItemCodeRequest(Document):
 			if getattr(self, "_doc_before_save", None)
 			else None
 		)
-		is_workflow_reject = (
+		is_review_to_draft = (
 			previous_state
-			and previous_state != "draft"
-			and self.workflow_state == "draft"
+			and previous_state != "Draft"
+			and self.workflow_state == "Draft"
+		)
+		is_send_to_ecode = (
+			previous_state == "Pending Account Verification"
+			and self.workflow_state == "Pending Codification"
+		)
+		is_discard_transition = (
+			previous_state
+			and previous_state != "Discard"
+			and self.workflow_state == "Discard"
+		)
+		should_skip_mandatory_validations = (
+			is_review_to_draft
+			or is_send_to_ecode
+			or is_discard_transition
 		)
 
 		# Auto-fill fields if empty
@@ -34,7 +48,7 @@ class ItemCodeRequest(Document):
 
 		# Similar item / duplicate validation
 		self._validate_no_duplicate_items()
-		if not is_workflow_reject:
+		if not should_skip_mandatory_validations:
 			self._validate_generated_codes()
 
 		# Expense account is required only when approving from Account Verification,
@@ -50,7 +64,7 @@ class ItemCodeRequest(Document):
 
 		# Validate each item in the child table
 		for item in self.items:
-			if is_workflow_reject:
+			if should_skip_mandatory_validations:
 				continue
 
 			if advancing_from_codification and not item.generated_code:
