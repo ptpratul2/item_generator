@@ -14,7 +14,7 @@ app_license = "mit"
 add_to_apps_screen = [
 	{
 		"name": "item_generator",
-		"logo": "/assets/frappe/images/ui/bubble-tea.svg",
+		"logo": "/assets/frappe/images/ui/bubble-tea-smile.svg",
 		"title": "Item Generator",
 		"route": "/app/item-generator-analytics",
 		"has_permission": "item_generator.api.dashboard.has_app_permission",
