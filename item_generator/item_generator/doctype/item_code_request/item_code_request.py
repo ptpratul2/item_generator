@@ -110,6 +110,11 @@ class ItemCodeRequest(Document):
 		self.update_summary_counts()
 	
 	def _validate_no_duplicate_items(self):
+		if self.workflow_state in ("Discard", "Rejected"):
+			return
+			
+        
+        
 		"""Prevent duplicate item creation - exact item_name match in existing Items."""
 		for item in self.items:
 			if not item.item_name or not item.item_name.strip():
